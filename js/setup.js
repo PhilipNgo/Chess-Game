@@ -17,7 +17,7 @@ window.addEventListener('resize', onWindowResize, false);
 let ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
 scene.add(ambientLight);
 let pointLight = new THREE.PointLight(0xffffff, 1, 50);
-pointLight.position.set(3, 10, 5);
+pointLight.position.set(0, 10, 0);
 pointLight.castShadow = true;
 pointLight.shadow.camera.near = 0.1;
 pointLight.shadow.camera.far = 100;
@@ -30,7 +30,8 @@ console.log(scene);
 
     //Camera
     let controls = new THREE.OrbitControls(camera, renderer.domElement);
-    camera.position.set(0, 40, 0);
+    camera.position.y = 40;
+    camera.position.z = 0;
     controls.update();
 
     let animate = function() {
