@@ -5,6 +5,10 @@ function addChessboard(scene, chessboard){
     let squareColor;
     let decideColor = false; //false = dark square
 
+    let woodTexture = new THREE.TextureLoader().load('wood.jpg');
+    let whiteTexture = new THREE.TextureLoader().load('white.jpg');
+    let blackTexture = new THREE.TextureLoader().load('black.jpg');
+
     for (let row = 0; row < 10; row++) {
       //Empty chessboard
       chessboard[row] = [];
@@ -26,17 +30,17 @@ function addChessboard(scene, chessboard){
           if(row == 0 || row == 9 || col == 0 || col == 9 ) //Outer rim of board
           {
             squareColor = new THREE.MeshStandardMaterial({
-              color: 0xa52a2a
+              map: woodTexture
             });
           }
           else if(decideColor){ // Light square
             squareColor = new THREE.MeshStandardMaterial({
-              color: 0xffffff
+              map: whiteTexture
             });
           }
           else{ // Dark square
             squareColor = new THREE.MeshStandardMaterial({
-              color: 0x000000
+              map: blackTexture
             });
           }
 

@@ -14,11 +14,12 @@ let renderer = new THREE.WebGLRenderer();
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor( 0x000000, 1 );
 document.body.appendChild(renderer.domElement);
 window.addEventListener('resize', onWindowResize, false);
 
 //lights and shadows
-let ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+let ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
 scene.add(ambientLight);
 let pointLight = new THREE.PointLight(0xffffff, 1, 50);
 pointLight.position.set(0, 10, 0);
@@ -38,11 +39,6 @@ console.log(scene);
 
     addPieces(scene, chessboard, allObj);
 
-
-
-
-
-
     //Controls
     let orbitControls = new OrbitControls(camera, renderer.domElement);
     var dragControls = new DragControls( allObj, camera, renderer.domElement);
@@ -56,14 +52,13 @@ console.log(scene);
 		dragControls.addEventListener( 'dragend', function () { orbitControls.enabled = true; } );
 
     //Camera
-    camera.position.y = 40;
-    camera.position.z = 0;
+    camera.position.y = 30;
+    camera.position.z = 30;
     //controls.update();
 
     let animate = function() {
       requestAnimationFrame(animate);
       orbitControls.update();
-
       renderer.render(scene, camera);
     };
 

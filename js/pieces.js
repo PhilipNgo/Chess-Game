@@ -171,4 +171,9 @@ blackQueenMesh.position.set(chessboard[8][4].position.x, 1.5 ,chessboard[8][4].p
   allObj.push(whiteKingMesh);
   allObj.push(blackKingMesh);
 
+  for (var i = 0; i < allObj.length; i++) {
+    allObj[i].castShadow = true; //default is false
+    allObj[i].receiveShadow = true; //default
+  }
+
 }
