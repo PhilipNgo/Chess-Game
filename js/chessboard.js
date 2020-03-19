@@ -1,5 +1,5 @@
-function addChessboard(scene){
-    let chessboard = [];
+function addChessboard(scene, chessboard){
+
 
     let squareGeo = new THREE.BoxGeometry(4, 4, 1);
     let squareColor;

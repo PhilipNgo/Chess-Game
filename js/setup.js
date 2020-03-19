@@ -30,34 +30,28 @@ scene.add(pointLight);
 console.log(scene);
 
     //Add the chessboard
-    addChessboard(scene);
+    var chessboard = [];
+    addChessboard(scene, chessboard);
 
     //Add pieces
-    //addPieces(scene);
-    let allWhitePawns = [];
-    let allBlackPawns = [];
+    var allObj = [];
 
-    let pawnGeo = new THREE.BoxGeometry(1,4,1);
-    let whitePawnMat = new THREE.MeshStandardMaterial({
-      color: 0xa5a5a5
-    });
+    addPieces(scene, chessboard, allObj);
 
-    let whitePawnMesh = new THREE.Mesh(pawnGeo, whitePawnMat);
-    whitePawnMesh.position.y = 2.5;
-    scene.add(whitePawnMesh);
 
-    var objects = [];
-    objects.push( whitePawnMesh );
+
+
+
 
     //Controls
     let orbitControls = new OrbitControls(camera, renderer.domElement);
-    var dragControls = new DragControls( objects, camera, renderer.domElement);
+    var dragControls = new DragControls( allObj, camera, renderer.domElement);
 		dragControls.addEventListener( 'dragstart', function ( event ) {
       orbitControls.enabled = false;
     } );
     dragControls.addEventListener ( 'drag', function( event ){
      console.log('drag');
-     event.object.position.y = 2.5; // Cant drag upwards.
+     event.object.position.y = 1.5; // Cant drag upwards.
     });
 		dragControls.addEventListener( 'dragend', function () { orbitControls.enabled = true; } );
 
