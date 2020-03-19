@@ -1,3 +1,7 @@
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.114/build/three.module.js";
+import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.114/examples/jsm/controls/OrbitControls.js";
+import { DragControls } from "https://cdn.jsdelivr.net/npm/three@0.114/examples/jsm/controls/DragControls.js";
+
 let SCREEN_WIDTH = window.innerWidth - 100;
 let SCREEN_HEIGHT = window.innerHeight - 100;
 let windowHalfX = window.innerWidth / 2;
@@ -28,15 +32,44 @@ console.log(scene);
     //Add the chessboard
     addChessboard(scene);
 
+    //Add pieces
+    //addPieces(scene);
+    let allWhitePawns = [];
+    let allBlackPawns = [];
+
+    let pawnGeo = new THREE.BoxGeometry(1,4,1);
+    let whitePawnMat = new THREE.MeshStandardMaterial({
+      color: 0xa5a5a5
+    });
+
+    let whitePawnMesh = new THREE.Mesh(pawnGeo, whitePawnMat);
+    whitePawnMesh.position.y = 2.5;
+    scene.add(whitePawnMesh);
+
+    var objects = [];
+    objects.push( whitePawnMesh );
+
+    //Controls
+    let orbitControls = new OrbitControls(camera, renderer.domElement);
+    var dragControls = new DragControls( objects, camera, renderer.domElement);
+		dragControls.addEventListener( 'dragstart', function ( event ) {
+      orbitControls.enabled = false;
+    } );
+    dragControls.addEventListener ( 'drag', function( event ){
+     console.log('drag');
+     event.object.position.y = 2.5; // Cant drag upwards.
+    });
+		dragControls.addEventListener( 'dragend', function () { orbitControls.enabled = true; } );
+
     //Camera
-    let controls = new THREE.OrbitControls(camera, renderer.domElement);
     camera.position.y = 40;
     camera.position.z = 0;
-    controls.update();
+    //controls.update();
 
     let animate = function() {
       requestAnimationFrame(animate);
-      controls.update();
+      orbitControls.update();
+
       renderer.render(scene, camera);
     };
 
