@@ -36,14 +36,28 @@ console.log(scene);
 
     //Add pieces
     var allObj = [];
+    var whiteObj = [];
+    var blackObj = [];
 
     addPieces(scene, chessboard, allObj);
 
+    for (var i = 0; i < allObj.length; i++) {
+      if(allObj[i].name.substr(0,5) == "White"){
+        whiteObj.push(allObj[i]);
+      }
+      else {
+        blackObj.push(allObj[i]);
+      }
+    }
+
     //Controls
     let orbitControls = new OrbitControls(camera, renderer.domElement);
-    var dragControls = new DragControls( allObj, camera, renderer.domElement);
-		checkBehavior(dragControls, orbitControls, allObj, chessboard);
+    var whiteDragControls = new DragControls( whiteObj, camera, renderer.domElement);
+    var blackDragControls = new DragControls( blackObj, camera, renderer.domElement);
+    var whosTurn = true; // White starts
 
+    checkBehavior(whiteDragControls, blackDragControls, orbitControls, allObj, chessboard, whosTurn);
+    console.log(blackObj);
     //Camera
     camera.position.y = 30;
     camera.position.z = 30;
@@ -51,6 +65,7 @@ console.log(scene);
     let animate = function() {
       requestAnimationFrame(animate);
       orbitControls.update();
+
       renderer.render(scene, camera);
     };
 

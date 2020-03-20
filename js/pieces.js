@@ -27,9 +27,10 @@ function addPieces(scene, chessboard, allObj)
     let blackPawnMesh = new THREE.Mesh(pawnGeo.clone(), blackMat.clone());
     let blackPawnHead = new THREE.Mesh(pawnHeadGeo.clone(), blackPawnMesh.material);
 
+    whitePawnMesh.name = "White Pawn";
+    blackPawnMesh.name = "Black Pawn";
+
     allWhitePawns.push(whitePawnMesh.clone());
-
-
     allBlackPawns.push(blackPawnMesh.clone());
 
     whitePawnHead.position.y = 1.5;
@@ -58,6 +59,9 @@ for (var i = 0; i < 2; i++) {
   let whiteRookMesh = new THREE.Mesh(rookGeo, whiteMat.clone());
   let blackRookMesh = new THREE.Mesh(rookGeo, blackMat.clone());
 
+  whiteRookMesh.name = "White Rook";
+  blackRookMesh.name = "Black Rook";
+
   allWhiteRooks.push(whiteRookMesh.clone());
   allBlackRooks.push(blackRookMesh.clone());
 
@@ -83,6 +87,9 @@ for (var i = 0; i < 2; i++) {
 
   let whiteKnightMesh = new THREE.Mesh(knightGeo, whiteMat.clone());
   let blackKnightMesh = new THREE.Mesh(knightGeo, blackMat.clone());
+
+  whiteKnightMesh.name = "White Knight";
+  blackKnightMesh.name = "Black Knight";
 
   allWhiteKnights.push(whiteKnightMesh.clone());
   allBlackKnights.push(blackKnightMesh.clone());
@@ -116,6 +123,9 @@ for (var i = 0; i < 2; i++) {
   let whiteBishopMesh = new THREE.Mesh(bishopGeo, whiteMat.clone());
   let blackBishopMesh = new THREE.Mesh(bishopGeo, blackMat.clone());
 
+  whiteBishopMesh.name = "White Bishop";
+  blackBishopMesh.name = "Black Bishop";
+
   allWhiteBishops.push(whiteBishopMesh.clone());
   allBlackBishops.push(blackBishopMesh.clone());
 
@@ -133,6 +143,8 @@ let kingGeo = new THREE.SphereGeometry(1.5);
 let whiteKingMesh = new THREE.Mesh(kingGeo, whiteMat.clone());
 let blackKingMesh = new THREE.Mesh(kingGeo, blackMat.clone());
 
+whiteKingMesh.name = "White King";
+blackKingMesh.name = "Black King";
 
 scene.add(whiteKingMesh);
 scene.add(blackKingMesh);
@@ -148,6 +160,9 @@ let whiteQueenMesh = new THREE.Mesh(queenGeo, whiteMat.clone());
 let whiteQueenHead = new THREE.Mesh(queenHeadGeo, whiteQueenMesh.material);
 let blackQueenMesh = new THREE.Mesh(queenGeo, blackMat.clone());
 let blackQueenHead = new THREE.Mesh(queenHeadGeo, blackQueenMesh.material);
+
+whiteQueenMesh.name = "White Queen";
+blackQueenMesh.name = "Black Queen";
 
 whiteQueenHead.position.y = 1.5;
 blackQueenHead.position.y = 1.5;
