@@ -42,19 +42,11 @@ console.log(scene);
     //Controls
     let orbitControls = new OrbitControls(camera, renderer.domElement);
     var dragControls = new DragControls( allObj, camera, renderer.domElement);
-		dragControls.addEventListener( 'dragstart', function ( event ) {
-      orbitControls.enabled = false;
-    } );
-    dragControls.addEventListener ( 'drag', function( event ){
-     console.log('drag');
-     event.object.position.y = 1.5; // Cant drag upwards.
-    });
-		dragControls.addEventListener( 'dragend', function () { orbitControls.enabled = true; } );
+		checkBehavior(dragControls, orbitControls, allObj, chessboard);
 
     //Camera
     camera.position.y = 30;
     camera.position.z = 30;
-    //controls.update();
 
     let animate = function() {
       requestAnimationFrame(animate);

@@ -5,6 +5,9 @@ function addPieces(scene, chessboard, allObj)
   let whiteMat = new THREE.MeshStandardMaterial({
     color: 0xa5a5a5
   });
+  let yo = new THREE.MeshStandardMaterial({
+      color: 0xa5a5a5
+    });
   let blackMat = new THREE.MeshStandardMaterial({
     color: 0x2c3a3e
   });
@@ -15,17 +18,18 @@ function addPieces(scene, chessboard, allObj)
 
   let pawnGeo = new THREE.ConeGeometry(1,3,32);
   let pawnHeadGeo = new THREE.OctahedronGeometry(0.8, 2);
-  let whitePawnMesh = new THREE.Mesh(pawnGeo, whiteMat);
-  let whitePawnHead = new THREE.Mesh(pawnHeadGeo, whiteMat);
-
-  let blackPawnMesh = new THREE.Mesh(pawnGeo, blackMat);
-  let blackPawnHead = new THREE.Mesh(pawnHeadGeo, blackMat);
-
-
 
   for (var i = 0; i < 8; i++) {
 
+    let whitePawnMesh = new THREE.Mesh(pawnGeo.clone(), whiteMat.clone());
+    let whitePawnHead = new THREE.Mesh(pawnHeadGeo.clone(), whitePawnMesh.material);
+
+    let blackPawnMesh = new THREE.Mesh(pawnGeo.clone(), blackMat.clone());
+    let blackPawnHead = new THREE.Mesh(pawnHeadGeo.clone(), blackPawnMesh.material);
+
     allWhitePawns.push(whitePawnMesh.clone());
+
+
     allBlackPawns.push(blackPawnMesh.clone());
 
     whitePawnHead.position.y = 1.5;
@@ -47,11 +51,12 @@ let allBlackRooks = [];
 
 let rookGeo = new THREE.BoxGeometry(2,3,2);
 
-let whiteRookMesh = new THREE.Mesh(rookGeo, whiteMat);
-let blackRookMesh = new THREE.Mesh(rookGeo, blackMat);
 let pos = 1; //Helper varaible for putting out objects
 
 for (var i = 0; i < 2; i++) {
+
+  let whiteRookMesh = new THREE.Mesh(rookGeo, whiteMat.clone());
+  let blackRookMesh = new THREE.Mesh(rookGeo, blackMat.clone());
 
   allWhiteRooks.push(whiteRookMesh.clone());
   allBlackRooks.push(blackRookMesh.clone());
@@ -72,11 +77,12 @@ let allBlackKnights = [];
 
 let knightGeo = new THREE.ParametricGeometry( THREE.ParametricGeometries.klein, 30, 30 );
 
-let whiteKnightMesh = new THREE.Mesh(knightGeo, whiteMat);
-let blackKnightMesh = new THREE.Mesh(knightGeo, blackMat);
 pos = 2;
 
 for (var i = 0; i < 2; i++) {
+
+  let whiteKnightMesh = new THREE.Mesh(knightGeo, whiteMat.clone());
+  let blackKnightMesh = new THREE.Mesh(knightGeo, blackMat.clone());
 
   allWhiteKnights.push(whiteKnightMesh.clone());
   allBlackKnights.push(blackKnightMesh.clone());
@@ -103,11 +109,12 @@ let allBlackBishops = [];
 
 let bishopGeo = new THREE.OctahedronGeometry(1.2);
 
-let whiteBishopMesh = new THREE.Mesh(bishopGeo, whiteMat);
-let blackBishopMesh = new THREE.Mesh(bishopGeo, blackMat);
 pos = 3; //Helper varaible for putting out objects
 
 for (var i = 0; i < 2; i++) {
+
+  let whiteBishopMesh = new THREE.Mesh(bishopGeo, whiteMat.clone());
+  let blackBishopMesh = new THREE.Mesh(bishopGeo, blackMat.clone());
 
   allWhiteBishops.push(whiteBishopMesh.clone());
   allBlackBishops.push(blackBishopMesh.clone());
@@ -123,8 +130,8 @@ for (var i = 0; i < 2; i++) {
 // Kings
 let kingGeo = new THREE.SphereGeometry(1.5);
 
-let whiteKingMesh = new THREE.Mesh(kingGeo, whiteMat);
-let blackKingMesh = new THREE.Mesh(kingGeo, blackMat);
+let whiteKingMesh = new THREE.Mesh(kingGeo, whiteMat.clone());
+let blackKingMesh = new THREE.Mesh(kingGeo, blackMat.clone());
 
 
 scene.add(whiteKingMesh);
@@ -137,10 +144,10 @@ blackKingMesh.position.set(chessboard[8][5].position.x, 1.5 ,chessboard[8][5].po
 let queenGeo = new THREE.BoxGeometry(1,3,1);
 let queenHeadGeo = new THREE.TorusKnotGeometry(0.7, 0.2, 64, 8, 20, 18);;
 
-let whiteQueenMesh = new THREE.Mesh(queenGeo, whiteMat);
-let whiteQueenHead = new THREE.Mesh(queenHeadGeo, whiteMat);
-let blackQueenMesh = new THREE.Mesh(queenGeo, blackMat);
-let blackQueenHead = new THREE.Mesh(queenHeadGeo, blackMat);
+let whiteQueenMesh = new THREE.Mesh(queenGeo, whiteMat.clone());
+let whiteQueenHead = new THREE.Mesh(queenHeadGeo, whiteQueenMesh.material);
+let blackQueenMesh = new THREE.Mesh(queenGeo, blackMat.clone());
+let blackQueenHead = new THREE.Mesh(queenHeadGeo, blackQueenMesh.material);
 
 whiteQueenHead.position.y = 1.5;
 blackQueenHead.position.y = 1.5;
@@ -170,6 +177,8 @@ blackQueenMesh.position.set(chessboard[8][4].position.x, 1.5 ,chessboard[8][4].p
   }
   allObj.push(whiteKingMesh);
   allObj.push(blackKingMesh);
+  allObj.push(whiteQueenMesh);
+  allObj.push(blackQueenMesh);
 
   for (var i = 0; i < allObj.length; i++) {
     allObj[i].castShadow = true; //default is false
