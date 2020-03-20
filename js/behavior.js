@@ -1,12 +1,23 @@
-function checkBehavior(whiteDragControls, blackDragControls, orbitControls, allObj, chessboard, whosTurn){
+function checkBehavior(whiteDragControls, blackDragControls, orbitControls, allObj, chessboard, whosTurn, whiteObj, blackObj){
 
+//==========================Orbit======================
+        orbitControls.enableDamping = true;
+        orbitControls.minPolarAngle = 0.8;
+        orbitControls.maxPolarAngle = 2.4;
+        orbitControls.maxAzimuthAngle = Math.PI;
+        orbitControls.minAzimuthAngle = 0;
+        orbitControls.dampingFactor = 0.07;
+        orbitControls.rotateSpeed = 0.87;
+        orbitControls.autoRotate = true;
+
+// ====================Drag===============================================
         blackDragControls.deactivate();
         let currentWhite = new THREE.Vector3();
         let currentBlack = new THREE.Vector3();
 
         //=============White drag controls============================
         whiteDragControls.addEventListener( 'hoveron', function (event){
-          event.object.material.emissive.set( 0x006400 );
+          event.object.material.emissive.set( 0x00008b );
         } );
         whiteDragControls.addEventListener( 'hoveroff', function (event){
           event.object.material.emissive.set( 0x000000 );
@@ -42,11 +53,12 @@ function checkBehavior(whiteDragControls, blackDragControls, orbitControls, allO
           if(checkPosition(event.object, chessboard, currentWhite)){
             blackDragControls.activate();
             whiteDragControls.deactivate();
+            whosTurn ^= true;
+            isTaken(event.object, whiteObj, blackObj, whosTurn);
+            orbitControls.autoRotateSpeed = -20;
           }
 
         } );
-
-
 
 
       //=============Black drag controls================================
@@ -84,6 +96,12 @@ function checkBehavior(whiteDragControls, blackDragControls, orbitControls, allO
           if(checkPosition(event.object, chessboard, currentBlack)){
             blackDragControls.deactivate();
             whiteDragControls.activate();
+            whosTurn ^= true;
+            console.log(whosTurn);
+
+            isTaken(event.object, whiteObj, blackObj, whosTurn);
+
+            orbitControls.autoRotateSpeed = 20;
           }
         } );
 
@@ -130,4 +148,26 @@ function startxPos(piece){
 
 function startzPos(piece){
     return piece.position.z;
+}
+
+function isTaken(piece, whiteObj, blackObj, whosTurn){
+
+    console.log("THIS IS",whosTurn);
+
+    if(!whosTurn){
+      for (var i = 0; i < blackObj.length; i++) {
+          if((piece.position.x == blackObj[i].position.x) && (piece.position.z == blackObj[i].position.z))
+          {
+              blackObj[i].position.set(20-2.5*i, 1.5, 19);
+          }
+        }
+      }else{
+      for (var k = 0; k < whiteObj.length; k++){
+
+        if((piece.position.x == whiteObj[k].position.x) && (piece.position.z == whiteObj[k].position.z))
+        {
+            whiteObj[k].position.set(20-2.5*k, 1.5, -25);
+        }
+      }
+    }
 }

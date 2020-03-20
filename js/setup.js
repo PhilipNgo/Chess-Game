@@ -56,8 +56,8 @@ console.log(scene);
     var blackDragControls = new DragControls( blackObj, camera, renderer.domElement);
     var whosTurn = true; // White starts
 
-    checkBehavior(whiteDragControls, blackDragControls, orbitControls, allObj, chessboard, whosTurn);
-    console.log(blackObj);
+    checkBehavior(whiteDragControls, blackDragControls, orbitControls, allObj, chessboard, whosTurn, whiteObj, blackObj);
+
     //Camera
     camera.position.y = 30;
     camera.position.z = 30;
@@ -65,6 +65,11 @@ console.log(scene);
     let animate = function() {
       requestAnimationFrame(animate);
       orbitControls.update();
+      //console.log(whosTurn);
+      //if(!whosTurn && camera.rotate.y < MATH.PI)
+
+
+
 
       renderer.render(scene, camera);
     };
