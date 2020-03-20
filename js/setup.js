@@ -56,7 +56,9 @@ console.log(scene);
     var blackDragControls = new DragControls( blackObj, camera, renderer.domElement);
     var whosTurn = true; // White starts
 
-    checkBehavior(whiteDragControls, blackDragControls, orbitControls, allObj, chessboard, whosTurn, whiteObj, blackObj);
+    checkBehavior(whiteDragControls, blackDragControls, orbitControls, allObj, chessboard, whosTurn, whiteObj, blackObj, scene);
+
+
 
     //Camera
     camera.position.y = 30;
