@@ -5,9 +5,6 @@ function addPieces(scene, chessboard, allObj)
   let whiteMat = new THREE.MeshStandardMaterial({
     color: 0xa5a5a5
   });
-  let yo = new THREE.MeshStandardMaterial({
-      color: 0xa5a5a5
-    });
   let blackMat = new THREE.MeshStandardMaterial({
     color: 0x2c3a3e
   });
@@ -55,8 +52,9 @@ for (var i = 0; i < 2; i++) {
   let whiteRookMesh = new THREE.Mesh(rookGeo, whiteMat.clone());
   let blackRookMesh = new THREE.Mesh(rookGeo, blackMat.clone());
 
-  whiteRookMesh.name = "White Rook";
-  blackRookMesh.name = "Black Rook";
+  whiteRookMesh.name = "White Rook" + i;
+  console.log(whiteRookMesh.name);
+  blackRookMesh.name = "Black Rook" + i;
 
   allWhiteRooks.push(whiteRookMesh.clone());
   allBlackRooks.push(blackRookMesh.clone());

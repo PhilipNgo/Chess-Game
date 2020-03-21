@@ -1,29 +1,9 @@
 var index = [0]; // Used in isTaken function
+var whiteCastleCheck = [false, false, false];  //WhiteKing, WhiteRook1, WhiteRook2
+var blackCastleCheck = [false, false, false];  //Black King, BlackRook1, BlackRook2
+function checkBehavior(whiteDragControls, blackDragControls, dotsDragControls, orbitControls, allObj, chessboard, whosTurn, whiteObj, blackObj, scene, helperDots){
+var castling = false;
 
-function checkBehavior(whiteDragControls, blackDragControls, orbitControls, allObj, chessboard, whosTurn, whiteObj, blackObj, scene){
-
-//=============Helper dots===============
-
-let helperDots = [];
-
-for (var i = 0; i < 45; i++) {
-
-  let helpGeo = new THREE.BoxGeometry(0.5,0.5,0.5);
-  let helpMat = new THREE.MeshStandardMaterial({
-    color: 0x8b0000
-  });
-  let help = new THREE.Mesh(helpGeo.clone(), helpMat.clone());
-
-
-  helperDots.push(help.clone());
-  helperDots[i].position.set(100,100,100);
-  if(i > 22){
-    helperDots[i].scale.set(5,10,5);
-    helperDots[i].material.transparent = true;
-    helperDots[i].material.opacity = 0.25;
-  }
-  scene.add(helperDots[i]);
-}
 
 //==========================Orbit======================
         orbitControls.enableDamping = true;
@@ -39,6 +19,7 @@ for (var i = 0; i < 45; i++) {
         blackDragControls.deactivate();
         let currentWhite = new THREE.Vector3();
         let currentBlack = new THREE.Vector3();
+        let currentObj = new THREE.Mesh();
 
         //=============White drag controls============================
         whiteDragControls.addEventListener( 'hoveron', function (event){
@@ -51,36 +32,16 @@ for (var i = 0; i < 45; i++) {
           orbitControls.enabled = false;
           currentWhite.set(startxPos(event.object), 1.5, startzPos(event.object));
           moveHelp(event.object, chessboard, currentWhite, helperDots, whiteObj, blackObj, allObj);
+          currentObj = event.object;
         } );
-
-        whiteDragControls.addEventListener ( 'drag', function( event ){
-        event.object.position.y = 1.5; // Cant drag upwards.
-
-        boundary(event.object, chessboard);
-
-        });
-
-
-        //After a move, its blacks turn
-        whiteDragControls.addEventListener( 'dragend', function (event){
-
+        whiteDragControls.addEventListener( 'drag', function ( event ) {
+          event.object.position.y = 1.5;
+          boundary(event.object, chessboard);
+        } );
+        whiteDragControls.addEventListener( 'dragend', function ( event ) {
           orbitControls.enabled = true;
-
-        //  for (var i = 0; i < helperDots.length; i++) {
-        console.log(helperDots[0].position, event.object.position)
-
-            if(hasMoved(event.object, chessboard, currentWhite, i)){// &&   helperDots[i].position == event.object.position){
-              blackDragControls.activate();
-              whiteDragControls.deactivate();
-              whosTurn ^= true;
-              isTaken(event.object, whiteObj, blackObj, whosTurn);
-              moveDots(helperDots);
-              orbitControls.autoRotateSpeed = -20;
-            }
-
-
+          event.object.position.set(currentWhite.x, 1.5, currentWhite.z);
         } );
-
 
       //=============Black drag controls================================
         blackDragControls.addEventListener( 'hoveron', function (event){
@@ -93,58 +54,114 @@ for (var i = 0; i < 45; i++) {
           orbitControls.enabled = false;
           currentBlack.set(startxPos(event.object), 1.5, startzPos(event.object));
           moveHelp(event.object, chessboard, currentBlack, helperDots, whiteObj, blackObj, allObj);
+          currentObj = event.object;
+
         } );
         //Cant drag outside board
-        blackDragControls.addEventListener ( 'drag', function( event ){
-        event.object.position.y = 1.5; // Cant drag upwards.
-        boundary(event.object, chessboard);
+        blackDragControls.addEventListener( 'drag', function ( event ) {
+          event.object.position.y = 1.5;
+          boundary(event.object, chessboard);
 
-        });
-        //After blacks turn, its whites turn
-        blackDragControls.addEventListener( 'dragend', function (event){
-
+        } );
+        blackDragControls.addEventListener( 'dragend', function ( event ) {
           orbitControls.enabled = true;
-
-          if(hasMoved(event.object, chessboard, currentBlack)){
-            blackDragControls.deactivate();
-            whiteDragControls.activate();
-            whosTurn ^= true;
-            isTaken(event.object, whiteObj, blackObj, whosTurn);
-            moveDots(helperDots);
-            orbitControls.autoRotateSpeed = 20;
-          }
+          event.object.position.set(currentBlack.x, 1.5, currentBlack.z);
         } );
 
 
+    //======================Helper dots Drag controls=================================
+    dotsDragControls.addEventListener( 'dragstart', function ( event ) {
+      orbitControls.enabled = true;
+
+      currentObj.position.set(event.object.position.x, event.object.position.y, event.object.position.z);
+
+      //Castling
+      if(event.object.name.substring(0,14) == "CastlingHelper"){
+          moveRookCastling(event.object, allObj, whosTurn, parseInt(event.object.name.substring(14,15)));
+      }
+
+      if(currentObj.name.substring(0,5) == "White"){
+
+        blackDragControls.activate();
+        whiteDragControls.deactivate();
+        whosTurn ^= true;
+        isTaken(event.object, whiteObj, blackObj, whosTurn);
+        moveDots(helperDots);
+        orbitControls.autoRotateSpeed = -20;
+        setFalse(currentObj, whiteCastleCheck, whosTurn);
+
+      }else{
+
+        blackDragControls.deactivate();
+        whiteDragControls.activate();
+        whosTurn ^= true;
+        isTaken(event.object, whiteObj, blackObj, whosTurn);
+        moveDots(helperDots);
+        orbitControls.autoRotateSpeed = 20;
+        setFalse(currentObj, blackCastleCheck, whosTurn);
+
+      }
+    } );
 }
 
-function hasMoved(piece, chessboard, current){
 
-    let currentxPos = current.x;
-    let currentzPos = current.z;
-    let pos = getPosOnBoard(piece, chessboard);
-
-    //Put piece in center of closest square
-    piece.position.set(chessboard[pos.x][pos.y].position.x, 1.5, chessboard[pos.x][pos.y].position.z);
-
-    //Check if piece moved
-    if(Math.abs(piece.position.x - currentxPos) >= 2.5 || Math.abs(piece.position.z - currentzPos) >= 2.5 ){
-        return true;
-    }else{
-        return false;
+//If king or rook has moved, then castling is no longer aloud
+function setFalse(currentObj, obj, whosTurn){
+    if(!whosTurn){
+        if(currentObj.name.substring(6,11) == "Rook1"){
+            obj[1] = true;
+        }else if(currentObj.name.substring(6,11) == "Rook0"){
+            obj[2] = true;
+        }else if (currentObj.name.substring(6,10) == "King") {
+            obj[0] = true;
+        }
     }
 }
+
+function moveRookCastling(obj, allObj, whosTurn, num){
+
+    let turn = "White ";
+
+    if(!whosTurn){
+      turn = "Black ";
+    }
+    for (var i = 0; i < allObj.length; i++) {
+        if(num == 1 && allObj[i].name == turn + "Rook1"){
+            allObj[i].position.set(obj.position.x-4, obj.position.y, obj.position.z);
+        }else if(num == 2 && allObj[i].name == turn + "Rook0"){
+
+            allObj[i].position.set(obj.position.x+4, obj.position.y, obj.position.z);
+        }
+    }
+}
+
+//Check if a piece has moved, not needed, but may come in use later on.
+// function hasMoved(piece, chessboard, current){
+//
+//     let currentxPos = current.x;
+//     let currentzPos = current.z;
+//     let pos = getPosOnBoard(piece, chessboard);
+//
+//     //Put piece in center of closest square
+//     piece.position.set(chessboard[pos.x][pos.y].position.x, 1.5, chessboard[pos.x][pos.y].position.z);
+//
+//     //Check if piece moved
+//     if(Math.abs(piece.position.x - currentxPos) >= 2.5 || Math.abs(piece.position.z - currentzPos) >= 2.5 ){
+//         return true;
+//     }else{
+//         return false;
+//     }
+// }
 
 function correctPosition(piece, helperDots){
 
-  //Check if on top of helperDot.
-  for (var i = 0; i < helperDots.length; i++) {
-    if(Math.abs(piece.position.x - helperDots[i].position.x) <= 2.5 && Math.abs(piece.position.z - helperDots[i].position.x) <= 2.5 ){
-      return true;
+    //Check if on top of helperDot.
+    for (var i = 0; i < helperDots.length; i++) {
+        if(Math.abs(piece.position.x - helperDots[i].position.x) <= 2.5 && Math.abs(piece.position.z - helperDots[i].position.x) <= 2.5 ){
+          return true;
+        }
     }
-  }
-  return false;
-
+    return false;
 }
 
 function startxPos(piece){
@@ -157,19 +174,12 @@ function startzPos(piece){
 }
 
 function isTaken(piece, whiteObj, blackObj, whosTurn){
-
     if(!whosTurn){
-
-        if(samePlace(piece,blackObj,index))
-        {
-            blackObj[index].position.set(20-2.5*index, 1.5, 19);
-        }
-      }else{
-        if(samePlace(piece,whiteObj, index))
-        {
-            whiteObj[index].position.set(20-2.5*index, 1.5, -25);
-        }
-
+      if(samePlace(piece,blackObj,index)){
+          blackObj[index].position.set(20-2.5*index, 1.5, 19);
+      }
+    }else if(samePlace(piece,whiteObj, index)){
+        whiteObj[index].position.set(20-2.5*index, 1.5, -25);
     }
 }
 
@@ -189,12 +199,14 @@ function boundary(piece, chessboard){
   }
 }
 
+//Move helperdot offscreen
 function moveDots(helperDots){
   for (var i = 0; i < helperDots.length; i++) {
     helperDots[i].position.set(100,100,100);
   }
 }
 
+// Shows where the pieces can move
 function moveHelp(piece, chessboard, current, helperDots, whiteObj, blackObj, allObj){
 
   // Variables for helper
@@ -230,15 +242,13 @@ function moveHelp(piece, chessboard, current, helperDots, whiteObj, blackObj, al
           moveDots(helperDots);
           if(!isOccupiedOnBoard(helperDots[0].position, allObj)){
                 helperDots[0].position.set(current.x, 1.5, chessboard[6][1].position.z);
-                  if(!isOccupiedOnBoard(helperDots[0].position, allObj)){
+                if(!isOccupiedOnBoard(helperDots[0].position, allObj)){
                     helperDots[1].position.set(current.x, 1.5, chessboard[5][1].position.z);
-                  }
+                }
           }
-
-
-      }else {
-        moveDots(helperDots);
-        helperDots[0].position.set(current.x, 1.5, chessboard[temp.x - 1][1].position.z);
+      }else{
+          moveDots(helperDots);
+          helperDots[0].position.set(current.x, 1.5, chessboard[temp.x - 1][1].position.z);
       }
       for (var i = 0; i < killzoneBlackPawn.length; i++) {
         if(isOccupiedOnBoard(killzoneBlackPawn[i], whiteObj)){
@@ -247,28 +257,28 @@ function moveHelp(piece, chessboard, current, helperDots, whiteObj, blackObj, al
       }
   }
 
-  if(piece.name.substr(6,10) == "Rook"){
+  if(piece.name.substring(6,10) == "Rook"){
       moveDots(helperDots);
       rookMovement(piece, chessboard, allObj, helperDots, whiteObj, blackObj, false);
   }
 
-  if(piece.name.substr(6,12) == "Bishop"){
+  if(piece.name.substring(6,12) == "Bishop"){
       moveDots(helperDots);
       bishopMovement(piece, chessboard, allObj, helperDots, whiteObj, blackObj, true);
   }
 
-  if(piece.name.substr(6,11) == "Queen"){
+  if(piece.name.substring(6,11) == "Queen"){
     moveDots(helperDots);
     rookMovement(piece, chessboard, allObj, helperDots, whiteObj, blackObj, false);
     bishopMovement(piece, chessboard, allObj, helperDots, whiteObj, blackObj, true);
   }
 
-  if(piece.name.substr(6,12) == "Knight"){
+  if(piece.name.substring(6,12) == "Knight"){
     moveDots(helperDots);
     knightMovement(piece, chessboard, allObj, helperDots, whiteObj, blackObj);
   }
 
-  if(piece.name.substr(6,10) == "King"){
+  if(piece.name.substring(6,10) == "King"){
       moveDots(helperDots);
       kingMovement(piece, chessboard, allObj, helperDots, whiteObj, blackObj);
   }
@@ -277,24 +287,24 @@ function moveHelp(piece, chessboard, current, helperDots, whiteObj, blackObj, al
 //Returns r,c of piece on chessboard
 function getPosOnBoard(piece, chessboard){
 
-  let minx = 10;
-  let minz = 10;
-  let r;
-  let c;
+    let minx = 10;
+    let minz = 10;
+    let r;
+    let c;
 
-  for (var row = 1; row < chessboard.length; row++) {
-    for (var col = 1; col < chessboard.length; col++) {
-      if(Math.abs(piece.position.x - chessboard[row][col].position.x) < minx){
-        minx = Math.abs(piece.position.x - chessboard[row][col].position.x)
-        c = col;
-      }
-      if(Math.abs(piece.position.z - chessboard[row][col].position.z) < minz){
-        minz = Math.abs(piece.position.z - chessboard[row][col].position.z)
-        r = row;
-      }
+    for (var row = 1; row < chessboard.length; row++) {
+        for (var col = 1; col < chessboard.length; col++) {
+            if(Math.abs(piece.position.x - chessboard[row][col].position.x) < minx){
+              minx = Math.abs(piece.position.x - chessboard[row][col].position.x)
+              c = col;
+            }
+            if(Math.abs(piece.position.z - chessboard[row][col].position.z) < minz){
+              minz = Math.abs(piece.position.z - chessboard[row][col].position.z)
+              r = row;
+            }
+        }
     }
-  }
-  return new THREE.Vector2(r,c);
+    return new THREE.Vector2(r,c);
 }
 
 //Returns true if spot is occupied. input is position
@@ -309,13 +319,13 @@ function isOccupiedOnBoard(pos, obj){
 
 //Return true or false if position is occupied. input is piece
 function samePlace(piece, obj, index){
-  for (var i = 0; i < obj.length; i++) {
-    if((piece.position.x == obj[i].position.x) && (piece.position.z == obj[i].position.z)){
-      index[0] = i;
-      return true;
+    for (var i = 0; i < obj.length; i++) {
+        if((piece.position.x == obj[i].position.x) && (piece.position.z == obj[i].position.z)){
+          index[0] = i;
+          return true;
+        }
     }
-  }
-  return false;
+    return false;
 }
 
 function isOutsideBoard(piece, chessboard){
@@ -332,7 +342,7 @@ function rookMovement(piece, chessboard, allObj, helperDots, whiteObj, blackObj,
   let posLeft = piece.position.clone();
   let posRight = piece.position.clone();
 
-  let counter = 0;;
+  let counter = 0;
 
   posUp.set(posUp.x, 1.5, posUp.z-4);
   posDown.set(posDown.x, 1.5, posDown.z+4);
@@ -360,7 +370,7 @@ function rookMovement(piece, chessboard, allObj, helperDots, whiteObj, blackObj,
     counter++;
   }
 
-    if(piece.name.substr(0,5) == "White"){
+    if(piece.name.substring(0,5) == "White"){
         killZone(posUp, posDown, posLeft, posRight, blackObj, helperDots, checkDiff);
     }else {
         killZone(posUp, posDown, posLeft, posRight, whiteObj, helperDots, checkDiff);
@@ -401,7 +411,7 @@ function bishopMovement(piece, chessboard, allObj, helperDots, whiteObj, blackOb
     posDownLeft.set(posDownLeft.x-4, 1.5, posDownLeft.z+4);
     counter++;
   }
-  if(piece.name.substr(0,5) == "White"){
+  if(piece.name.substring(0,5) == "White"){
       killZone(posUpRight, posUpLeft, posDownRight, posDownLeft, blackObj, helperDots, checkDiff);
   }else {
       killZone(posUpRight, posUpLeft, posDownRight, posDownLeft, whiteObj, helperDots, checkDiff);
@@ -436,7 +446,7 @@ function knightMovement(piece, chessboard, allObj, helperDots, whiteObj, blackOb
     }
   }
 
-  if(piece.name.substr(0,5) == "White"){
+  if(piece.name.substring(0,5) == "White"){
       killZone(pos[0], pos[1], pos[2], pos[3], blackObj, helperDots, false);
       killZone(pos[4], pos[5], pos[6], pos[7], blackObj, helperDots, true);
   }else {
@@ -473,13 +483,53 @@ for (var i = 0; i < pos.length; i++) {
   }
 }
 
-if(piece.name.substr(0,5) == "White"){
+if(piece.name.substring(0,5) == "White"){
     killZone(pos[0], pos[1], pos[2], pos[3], blackObj, helperDots, false);
     killZone(pos[4], pos[5], pos[6], pos[7], blackObj, helperDots, true);
+
+    if(canCastle("White", 1)){
+      let rightRight = pos[3].clone(); //p[3] is Right
+      rightRight.set(rightRight.x+4, 1.5, rightRight.z);
+      if(!isOccupiedOnBoard(rightRight, allObj) && !isOccupiedOnBoard(pos[3], allObj)){
+        helperDots[43].position.set(rightRight.x, 1.5, rightRight.z);
+        counter++;
+      }
+    }
+    if(canCastle("White", 2)){
+      let leftLeft = pos[2].clone(); //p[3] is Right
+      leftLeft.set(leftLeft.x-4, 1.5, leftLeft.z);
+      if(!isOccupiedOnBoard(leftLeft, allObj) && !isOccupiedOnBoard(pos[2], allObj)){
+        helperDots[44].position.set(leftLeft.x, 1.5, leftLeft.z);
+        counter++;
+      }
+    }
+
+
 }else {
     killZone(pos[0], pos[1], pos[2], pos[3], whiteObj, helperDots, false);
     killZone(pos[4], pos[5], pos[6], pos[7], whiteObj, helperDots, true);
+
+    if(canCastle("Black", 1)){
+      let rightRight = pos[3].clone(); //p[3] is Right
+      rightRight.set(rightRight.x+4, 1.5, rightRight.z);
+      if(!isOccupiedOnBoard(rightRight, allObj) && !isOccupiedOnBoard(pos[3], allObj)){
+        helperDots[43].position.set(rightRight.x, 1.5, rightRight.z);
+        counter++;
+      }
+    }
+    if(canCastle("Black", 2)){
+      let leftLeft = pos[2].clone(); //p[3] is Right
+      leftLeft.set(leftLeft.x-4, 1.5, leftLeft.z);
+      if(!isOccupiedOnBoard(leftLeft, allObj) && !isOccupiedOnBoard(pos[2], allObj)){
+        helperDots[44].position.set(leftLeft.x, 1.5, leftLeft.z);
+        counter++;
+      }
+    }
 }
+
+
+
+
 }
 
 function killZone(posUp, posDown ,posLeft, posRight, obj, helperDots, checkDiff){
@@ -506,5 +556,15 @@ function killZone(posUp, posDown ,posLeft, posRight, obj, helperDots, checkDiff)
         counter2++;
       }
   }
+}
 
+
+function canCastle(choice, pos){
+  if(choice == "White"){
+      if(whiteCastleCheck[pos] || whiteCastleCheck[0]){return false;}
+      return true;
+  }else{
+      if(blackCastleCheck[pos] || blackCastleCheck[0]){return false;}
+      return true;
+  }
 }

@@ -50,15 +50,44 @@ console.log(scene);
       }
     }
 
+    //Helper dots for pieces
+    let helperDots = [];
+
+    for (var i = 0; i < 45; i++) {
+
+      let helpGeo = new THREE.BoxGeometry(0.5,0.5,0.5);
+      let helpMat = new THREE.MeshStandardMaterial({
+        color: 0x8b0000
+      });
+      let help = new THREE.Mesh(helpGeo.clone(), helpMat.clone());
+
+      helperDots.push(help.clone());
+      helperDots[i].position.set(100,100,100);
+      if(i > 22 && i < 43){
+        helperDots[i].scale.set(5,10,5);
+        helperDots[i].material.transparent = true;
+        helperDots[i].material.opacity = 0.25;
+      }else if(i > 42){
+        helperDots[i].name = "CastlingHelper" + (i - 42);
+        console.log(helperDots[i].name);
+        //helperDots[i].material.color = "0xf5bd1f";
+      }
+      scene.add(helperDots[i]);
+    }
+
+
     //Controls
     let orbitControls = new OrbitControls(camera, renderer.domElement);
     var whiteDragControls = new DragControls( whiteObj, camera, renderer.domElement);
     var blackDragControls = new DragControls( blackObj, camera, renderer.domElement);
+    var dotsDragControls = new DragControls( helperDots, camera, renderer.domElement);
     var whosTurn = true; // White starts
 
-    checkBehavior(whiteDragControls, blackDragControls, orbitControls, allObj, chessboard, whosTurn, whiteObj, blackObj, scene);
+    //Controls the behaviour or pieces. Backbone of everything
+    checkBehavior(whiteDragControls, blackDragControls, dotsDragControls, orbitControls, allObj, chessboard, whosTurn, whiteObj, blackObj, scene, helperDots);
 
-
+    //Board that shows history of moves
+      showBoard(whiteObj, blackObj, scene, orbitControls);
 
     //Camera
     camera.position.y = 30;
@@ -68,11 +97,8 @@ console.log(scene);
       requestAnimationFrame(animate);
       orbitControls.update();
       //console.log(whosTurn);
+
       //if(!whosTurn && camera.rotate.y < MATH.PI)
-
-
-
-
       renderer.render(scene, camera);
     };
 
