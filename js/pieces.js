@@ -18,6 +18,8 @@ function addPieces(scene, chessboard, allObj)
 
   let pawnGeo = new THREE.ConeGeometry(1,3,32);
   let pawnHeadGeo = new THREE.OctahedronGeometry(0.8, 2);
+  pawnHeadGeo.translate(0, 1.5, 0);
+  pawnGeo.merge(pawnHeadGeo);
 
   for (var i = 0; i < 8; i++) {
 
@@ -32,12 +34,6 @@ function addPieces(scene, chessboard, allObj)
 
     allWhitePawns.push(whitePawnMesh.clone());
     allBlackPawns.push(blackPawnMesh.clone());
-
-    whitePawnHead.position.y = 1.5;
-    blackPawnHead.position.y = 1.5;
-
-    allWhitePawns[i].add(whitePawnHead.clone());
-    allBlackPawns[i].add(blackPawnHead.clone());
 
     scene.add(allWhitePawns[i]);
     scene.add(allBlackPawns[i]);
@@ -154,7 +150,10 @@ blackKingMesh.position.set(chessboard[8][5].position.x, 1.5 ,chessboard[8][5].po
 
 //Queens
 let queenGeo = new THREE.BoxGeometry(1,3,1);
-let queenHeadGeo = new THREE.TorusKnotGeometry(0.7, 0.2, 64, 8, 20, 18);;
+let queenHeadGeo = new THREE.TorusKnotGeometry(0.7, 0.2, 64, 8, 20, 18);
+queenHeadGeo.translate(0, 1.5, 0);
+queenGeo.merge(queenHeadGeo);
+
 
 let whiteQueenMesh = new THREE.Mesh(queenGeo, whiteMat.clone());
 let whiteQueenHead = new THREE.Mesh(queenHeadGeo, whiteQueenMesh.material);
@@ -163,12 +162,6 @@ let blackQueenHead = new THREE.Mesh(queenHeadGeo, blackQueenMesh.material);
 
 whiteQueenMesh.name = "White Queen";
 blackQueenMesh.name = "Black Queen";
-
-whiteQueenHead.position.y = 1.5;
-blackQueenHead.position.y = 1.5;
-
-whiteQueenMesh.add(whiteQueenHead);
-blackQueenMesh.add(blackQueenHead);
 
 scene.add(whiteQueenMesh);
 scene.add(blackQueenMesh);
