@@ -80,6 +80,19 @@ var castling = false;
           moveRookCastling(event.object, allObj, whosTurn, parseInt(event.object.name.substring(14,15)));
       }
 
+      console.log(currentObj.name, currentObj.position.z);
+
+      if(currentObj.name == "White Pawn" && currentObj.position.z == chessboard[8][1].position.z){
+        currentObj.geometry.dispose();
+        currentObj.geometry = whiteObj[findQueen(whiteObj)].geometry.clone();
+        currentObj.name = "White Queen";
+      }
+      if(currentObj.name == "Black Pawn" && currentObj.position.z == chessboard[1][1].position.z){
+        currentObj.geometry.dispose();
+        currentObj.geometry = blackObj[findQueen(blackObj)].geometry.clone();
+        currentObj.name = "Black Queen";
+      }
+
       if(currentObj.name.substring(0,5) == "White"){
 
         blackDragControls.activate();
@@ -88,7 +101,7 @@ var castling = false;
         isTaken(event.object, whiteObj, blackObj, whosTurn);
         moveDots(helperDots);
         orbitControls.autoRotateSpeed = -20;
-        setFalse(currentObj, whiteCastleCheck, whosTurn);
+        setKingRookMovedTrue(currentObj, whiteCastleCheck);
 
       }else{
 
@@ -98,16 +111,25 @@ var castling = false;
         isTaken(event.object, whiteObj, blackObj, whosTurn);
         moveDots(helperDots);
         orbitControls.autoRotateSpeed = 20;
-        setFalse(currentObj, blackCastleCheck, whosTurn);
+        setKingRookMovedTrue(currentObj, blackCastleCheck);
+        console.log(blackCastleCheck);
 
       }
     } );
 }
 
+//Return index of queen
+function findQueen(obj){
+    for (var i = 0; i < obj.length; i++) {
+      if(obj[i].name.substring(6,11) == "Queen"){
+        return i;
+      }
+    }
+}
+
 
 //If king or rook has moved, then castling is no longer aloud
-function setFalse(currentObj, obj, whosTurn){
-    if(!whosTurn){
+function setKingRookMovedTrue(currentObj, obj){
         if(currentObj.name.substring(6,11) == "Rook1"){
             obj[1] = true;
         }else if(currentObj.name.substring(6,11) == "Rook0"){
@@ -115,7 +137,6 @@ function setFalse(currentObj, obj, whosTurn){
         }else if (currentObj.name.substring(6,10) == "King") {
             obj[0] = true;
         }
-    }
 }
 
 function moveRookCastling(obj, allObj, whosTurn, num){

@@ -9,6 +9,7 @@ Side project chess game.
 ```
 - Does not know when check/stalemate
 - Piece can still move even if pinned infront of king
+- En passant capture not included
 ```
 ### Can do
 ```

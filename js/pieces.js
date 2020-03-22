@@ -37,6 +37,7 @@ function addPieces(scene, chessboard, allObj)
 
     allWhitePawns[i].position.set(chessboard[2][i+1].position.x, 1.5 ,chessboard[2][i+1].position.z);
     allBlackPawns[i].position.set(chessboard[7][i+1].position.x, 1.5 ,chessboard[7][i+1].position.z);
+
   }
 
 //All rooks
