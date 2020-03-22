@@ -558,7 +558,6 @@ function killZone(posUp, posDown ,posLeft, posRight, obj, helperDots, checkDiff)
   }
 }
 
-
 function canCastle(choice, pos){
   if(choice == "White"){
       if(whiteCastleCheck[pos] || whiteCastleCheck[0]){return false;}
@@ -568,3 +567,5 @@ function canCastle(choice, pos){
       return true;
   }
 }
+
+//function isUnderTreat()
